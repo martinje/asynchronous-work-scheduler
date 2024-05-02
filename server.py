@@ -10,6 +10,16 @@ ids = {}
 app = Flask(__name__)
 
 def work(id, sleep_time_in_seconds):
+    """
+    Perform work for a given ID.
+
+    Args:
+        id (int): The ID of the work.
+        sleep_time_in_seconds (int): The time to sleep in seconds.
+
+    Returns:
+        None
+    """
     global ids
     ids[id]['status'] = "working"
     now = datetime.datetime.now
@@ -24,13 +34,19 @@ def work(id, sleep_time_in_seconds):
 
 @app.route('/api', methods=['POST'])
 def create():
+    """
+    Creates a new request and starts the work in a new thread.
+
+    Returns:
+        A JSON response containing the generated ID and the status URL.
+    """
     global ids
     # Generate a random guid.
     # The guid will be used to identify the request.
     # This is useful for debugging purposes.
     id = str(uuid.uuid4())
 
-    # random sleept time between 60 and 300 seconds
+    # random sleep time between 60 and 300 seconds
     sleep_time_in_seconds = random.randint(60, 300)
     
     # calculate exact times from now() and sleep_time_in_seconds
@@ -53,10 +69,17 @@ def create():
 
 @app.route('/api', methods=['GET'])
 def status():
+    """
+    Endpoint for checking the status of a job.
+
+    Returns:
+        - If the job is done: JSON response with message 'Job is done!' and status code 200.
+        - If the job is still in progress: JSON response with message 'Job is still in progress!',
+          estimated time of completion, and seconds to completion, along with status code 202.
+        - If the id is invalid: JSON response with message 'Invalid id!' and status code 400.
+    """
     global ids
     
-    
-
     # Get the id from the request
     inbound_id = request.args.get('id')
 
@@ -78,17 +101,6 @@ def status():
             'seconds_to_completion': seconds_to_completion
         }
         return jsonify(payload), 202
-        
-
-
-    
-
-
-
-    
-    
-    
-
 
     data = request.get_json()
     return jsonify(data), 201
